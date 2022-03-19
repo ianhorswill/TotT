@@ -1,0 +1,27 @@
+initially:
+    [ReadJson "town" ?t] [set Town = ?t]
+    [?t characters ?c] [DefinePredicateFromIList "Character" ?c]
+    [?t lots ?l] [DefinePredicateFromIList "Lot" ?l]
+    [?t places ?p] [DefinePredicateFromIList "Place" ?p]
+[end]
+
+# ?c has id ?id
+[predicate]
+CharacterId ?c ?id: [Character ?c] [?c id ?id]
+
+# ?c has sexual partner with id ?i
+[predicate]
+SexualPartnerId ?c ?i: [Character ?c] [?c sexualPartners ?partnerIds] [RandomElement ?partnerIds ?i]
+
+# ?c1 has ?c2 as a sexual partner
+[predicate]
+SexualPartner ?c1 ?c2: [SexualPartnerId ?c1 ?i] [CharacterId ?c2 ?i]
+
+# ?c1 and ?c2 have both had sex with ?l
+[predicate]
+LoveTriangle ?c1 ?c2 ?l: [Character ?c1] [Character ?c2] [Different ?c1 ?c2] [SexualPartnerId ?c1 ?i] [SexualPartnerId ?c2 ?i] [CharacterId ?l ?i]
+
+FullName ?c: [Character ?c] [?c fullName ?n] ?n/Write
+Mention (Character ?c): ?c/FullName
+
+Gossip: [LoveTriangle ?c1 ?c2 ?l] ?c1 and ?c2 are both sleeping with ?l!
